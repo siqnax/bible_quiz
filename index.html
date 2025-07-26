@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bible Quiz Challenge</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3a6ea5;
+            --secondary: #1a3c5f;
+            --accent: #e9b44c;
+            --light: #f5f5f5;
+            --dark: #1e1e1e;
+            --success: #4caf50;
+            --error: #e74c3c;
+            --warning: #f39c12;
+            --font-heading: 'Georgia', serif;
+            --font-body: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(135deg, #1a3c5f 0%, #3a6ea5 100%);
+            color: var(--light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            position: relative;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .logo-icon {
+            font-size: 3rem;
+            color: var(--accent);
+            filter: drop-shadow(0 0 5px rgba(233, 180, 76, 0.7));
+        }
+        
+        h1 {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 20px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 25px;
+        }
+        
+        .card-title {
+            font-family: var(--font-heading);
+            color: var(--accent);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(233,180,76,0.3);
+            font-size: 1.8rem;
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        select, input, button {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 0 0 3px rgba(233,180,76,0.4);
+        }
+        
+        select option {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--accent), #f1c76b);
+            color: var(--dark);
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            padding: 14px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Quiz Area */
+        .quiz-area {
+            display: none;
+        }
+        
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat-box {
+            background: rgba(0,0,0,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 100px;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .question-container {
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        
+        .verse-ref {
+            font-style: italic;
+            color: var(--accent);
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            display: none;
+        }
+        
+        /* Timer styles */
+        .timer-container {
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(to right, #e9b44c, #e74c3c);
+            border-radius: 5px;
+            transition: width 0.1s linear;
+        }
+        
+        .timer-text {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 5px;
+            color: var(--accent);
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .option {
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .option:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .option-letter {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .option.selected {
+            background: rgba(233,180,76,0.3);
+            border: 2px solid var(--accent);
+        }
+        
+        .option.correct {
+            background: rgba(76, 175, 80, 0.3);
+            border: 2px solid var(--success);
+        }
+        
+        .option.incorrect {
+            background: rgba(231, 76, 60, 0.3);
+            border: 2px solid var(--error);
+        }
+        
+        .feedback-area {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+        
+        .feedback-text {
+            line-height: 1.6;
+        }
+        
+        .ai-icon {
+            color: #10a37f;
+            margin-right: 5px;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        /* Leaderboard */
+        .leaderboard-list {
+            list-style: none;
+        }
+        
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-item:hover {
+            background: rgba(0,0,0,0.2);
+            transform: translateX(5px);
+        }
+        
+        .leaderboard-position {
+            font-weight: bold;
+            color: var(--accent);
+            width: 30px;
+        }
+        
+        .leaderboard-name {
+            flex-grow: 1;
+        }
+        
+        .leaderboard-score {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .hourly-draw {
+            background: rgba(233,180,76,0.15);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .draw-title {
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .timer {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 15px 0;
+            color: var(--accent);
+            font-family: monospace;
+        }
+        
+        .winner {
+            font-weight: bold;
+            color: var(--accent);
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        
+        /* Results Screen */
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .results-title {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .score-display {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(233,180,76,0.5);
+        }
+        
+        .achievements {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .achievement {
+            background: rgba(233,180,76,0.1);
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            padding: 20px;
+            width: 180px;
+            text-align: center;
+        }
+        
+        .achievement-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .achievement-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        /* Name Input Form */
+        .name-form {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 30px auto;
+            text-align: center;
+        }
+        
+        .name-form h3 {
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+        
+        .name-inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .name-inputs input {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .settings-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .stat-box {
+                min-width: auto;
+            }
+            
+            .name-inputs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-bible logo-icon"></i>
+                <h1>Bible Quiz Challenge</h1>
+            </div>
+            <p class="subtitle">Test your knowledge of Scripture with our interactive quiz. Receive AI-powered insights and track your progress!</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- Left Column -->
+            <div class="left-column">
+                <!-- Settings Card -->
+                <div class="card settings-card fade-in">
+                    <h2 class="card-title">Quiz Settings</h2>
+                    <div class="settings-panel">
+                        <div class="form-group">
+                            <label for="question-count">Number of Questions</label>
+                            <select id="question-count">
+                                <option value="10">10 Questions</option>
+                                <option value="20">20 Questions</option>
+                                <option value="30">30 Questions</option>
+                                <option value="50">50 Questions</option>
+                                <option value="100">All Questions</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="topic">Topic</label>
+                            <select id="topic">
+                                <option value="all">All Topics</option>
+                                <option value="ot">Old Testament</option>
+                                <option value="nt">New Testament</option>
+                                <option value="gospels">Gospels</option>
+                                <option value="prophets">Prophets</option>
+                                <option value="wisdom">Wisdom Literature</option>
+                                <option value="paul">Paul's Letters</option>
+                                <option value="moses">Life of Moses</option>
+                                <option value="jesus">Life of Jesus</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="difficulty">Difficulty Level</label>
+                            <select id="difficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                                <option value="expert">Expert</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="book">Specific Book</label>
+                            <select id="book">
+                                <option value="any">Any Book</option>
+                                <option value="genesis">Genesis</option>
+                                <option value="exodus">Exodus</option>
+                                <option value="psalms">Psalms</option>
+                                <option value="isaiah">Isaiah</option>
+                                <option value="matthew">Matthew</option>
+                                <option value="john">John</option>
+                                <option value="romans">Romans</option>
+                                <option value="revelation">Revelation</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="start-quiz" class="btn">
+                        <i class="fas fa-play"></i> Start Quiz
+                    </button>
+                </div>
+                
+                <!-- Quiz Area -->
+                <div class="card quiz-area" id="quiz-area">
+                    <div class="quiz-header">
+                        <div class="stats">
+                            <div class="stat-box">
+                                <div class="stat-value" id="score">0</div>
+                                <div class="stat-label">Score</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="streak">0</div>
+                                <div class="stat-label">Streak</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-value" id="progress">1/10</div>
+                                <div class="stat-label">Progress</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="question-container">
+                        <div class="question-number">Question <span id="current-q">1</span></div>
+                        <div class="question-text" id="question-text">Who built the ark according to God's instructions?</div>
+                        <div class="verse-ref" id="verse-ref">Genesis 6:13-22</div>
+                        
+                        <!-- Timer -->
+                        <div class="timer-container">
+                            <div class="timer-bar" id="timer-bar"></div>
+                        </div>
+                        <div class="timer-text" id="timer-text">10 seconds remaining</div>
+                        
+                        <div class="options-grid" id="options-container">
+                            <div class="option" data-option="A">
+                                <div class="option-letter">A</div>
+                                <div class="option-text">Abraham</div>
+                            </div>
+                            <div class="option" data-option="B">
+                                <div class="option-letter">B</div>
+                                <div class="option-text">Moses</div>
+                            </div>
+                            <div class="option" data-option="C">
+                                <div class="option-letter">C</div>
+                                <div class="option-text">Noah</div>
+                            </div>
+                            <div class="option" data-option="D">
+                                <div class="option-letter">D</div>
+                                <div class="option-text">David</div>
+                            </div>
+                        </div>
+                        
+                        <div class="feedback-area" id="feedback-area">
+                            <div class="feedback-title"><i class="fas fa-robot ai-icon"></i> AI Insight</div>
+                            <div class="feedback-text" id="feedback-text">That's correct! Noah built the ark as instructed by God to save his family and the animals from the flood. This story demonstrates God's judgment on sin and His provision for those who are faithful.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <button id="hint-btn" class="btn" style="background: rgba(58,110,165,0.7);">
+                            <i class="fas fa-lightbulb"></i> Get AI Hint
+                        </button>
+                        <button id="next-btn" class="btn">
+                            Next Question <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Results Screen -->
+                <div class="card results-screen" id="results-screen">
+                    <h2 class="results-title">Quiz Completed!</h2>
+                    <div class="score-display" id="final-score">85%</div>
+                    <p>You answered <span id="correct-count">17</span> out of <span id="total-questions">20</span> correctly</p>
+                    
+                    <!-- Name Input Form -->
+                    <div class="name-form">
+                        <h3>Enter Your Name (Optional)</h3>
+                        <p>Add your name to the leaderboard if you wish</p>
+                        <div class="name-inputs">
+                            <input type="text" id="first-name" placeholder="First Name">
+                            <input type="text" id="last-name" placeholder="Last Name">
+                        </div>
+                        <button id="submit-name" class="btn">
+                            <i class="fas fa-trophy"></i> Submit to Leaderboard
+                        </button>
+                        <button id="skip-name" class="btn" style="background: rgba(58,110,165,0.7); margin-top: 10px;">
+                            <i class="fas fa-forward"></i> Skip to Results
+                        </button>
+                    </div>
+                    
+                    <div class="ai-feedback" id="ai-feedback-section" style="display: none;">
+                        <h3><i class="fas fa-robot ai-icon"></i> AI-Powered Feedback</h3>
+                        <p id="ai-feedback-text">Great job! You have a strong understanding of the New Testament. Consider studying the Book of Revelation to improve in that area.</p>
+                    </div>
+                    
+                    <div class="achievements" id="achievements-section" style="display: none;">
+                        <div class="achievement">
+                            <i class="fas fa-fire achievement-icon"></i>
+                            <div class="achievement-title">5 Question Streak</div>
+                            <div>Bible Scholar</div>
+                        </div>
+                        <div class="achievement">
+                            <i class="fas fa-trophy achievement-icon"></i>
+                            <div class="achievement-title">85% Score</div>
+                            <div>Knowledgeable</div>
+                        </div>
+                        <div class="achievement">
+                            <i class="fas fa-star achievement-icon"></i>
+                            <div class="achievement-title">First Quiz</div>
+                            <div>Beginner</div>
+                        </div>
+                    </div>
+                    
+                    <button id="restart-btn" class="btn" style="margin-top: 30px;">
+                        <i class="fas fa-redo"></i> Take Another Quiz
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Right Column -->
+            <div class="right-column">
+                <!-- Leaderboard Card -->
+                <div class="card">
+                    <h2 class="card-title">Leaderboard</h2>
+                    <ul class="leaderboard-list" id="leaderboard">
+                        <li class="leaderboard-item">
+                            <div class="leaderboard-position">1</div>
+                            <div class="leaderboard-name">Sarah Johnson</div>
+                            <div class="leaderboard-score">98%</div>
+                        </li>
+                        <li class="leaderboard-item">
+                            <div class="leaderboard-position">2</div>
+                            <div class="leaderboard-name">Michael Chen</div>
+                            <div class="leaderboard-score">95%</div>
+                        </li>
+                        <li class="leaderboard-item">
+                            <div class="leaderboard-position">3</div>
+                            <div class="leaderboard-name">David Thompson</div>
+                            <div class="leaderboard-score">93%</div>
+                        </li>
+                        <li class="leaderboard-item">
+                            <div class="leaderboard-position">4</div>
+                            <div class="leaderboard-name">Rebecca Williams</div>
+                            <div class="leaderboard-score">91%</div>
+                        </li>
+                        <li class="leaderboard-item">
+                            <div class="leaderboard-position">5</div>
+                            <div class="leaderboard-name">James Wilson</div>
+                            <div class="leaderboard-score">89%</div>
+                        </li>
+                    </ul>
+                    
+                    <div class="hourly-draw">
+                        <div class="draw-title">Hourly Prize Draw</div>
+                        <p>Top scorers each hour are entered to win</p>
+                        <div class="timer" id="draw-timer">59:23</div>
+                        <div class="winner">Current Winner: <span id="current-winner">Mark Roberts</span></div>
+                        <p>$5 gift card awarded every hour!</p>
+                    </div>
+                </div>
+                
+                <!-- Achievements Card -->
+                <div class="card">
+                    <h2 class="card-title">Your Achievements</h2>
+                    <div class="achievement">
+                        <i class="fas fa-seedling achievement-icon"></i>
+                        <div class="achievement-title">First Steps</div>
+                        <div>Complete your first quiz</div>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-fire achievement-icon"></i>
+                        <div class="achievement-title">5 in a Row</div>
+                        <div>Answer 5 questions correctly consecutively</div>
+                    </div>
+                    <div class="achievement">
+                        <i class="fas fa-book achievement-icon"></i>
+                        <div class="achievement-title">Old Testament Expert</div>
+                        <div>Score 90%+ on OT quiz</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample Bible questions database
+        const bibleQuestions = [
+            {
+                id: 1,
+                question: "Who built the ark according to God's instructions?",
+                options: ["Abraham", "Moses", "Noah", "David"],
+                correctAnswer: 2,
+                verse: "Genesis 6:13-22",
+                explanation: "Noah built the ark as instructed by God to save his family and the animals from the flood.",
+                topic: "ot",
+                book: "genesis",
+                difficulty: "easy"
+            },
+            {
+                id: 2,
+                question: "What is the first book of the New Testament?",
+                options: ["Mark", "John", "Luke", "Matthew"],
+                correctAnswer: 3,
+                verse: "Matthew 1:1",
+                explanation: "The Gospel of Matthew is the first book of the New Testament, presenting Jesus as the Messiah.",
+                topic: "nt",
+                book: "matthew",
+                difficulty: "easy"
+            },
+            {
+                id: 3,
+                question: "Who was thrown into the lions' den but survived unharmed?",
+                options: ["Samson", "Daniel", "Elijah", "Joseph"],
+                correctAnswer: 1,
+                verse: "Daniel 6:16-23",
+                explanation: "Daniel was thrown into the lions' den for praying to God, but God shut the lions' mouths and he was unharmed.",
+                topic: "ot",
+                book: "daniel",
+                difficulty: "medium"
+            },
+            {
+                id: 4,
+                question: "How many books are in the New Testament?",
+                options: ["27", "39", "66", "24"],
+                correctAnswer: 0,
+                verse: "",
+                explanation: "The New Testament contains 27 books: 4 Gospels, 1 book of history, 21 letters, and 1 book of prophecy.",
+                topic: "nt",
+                book: "",
+                difficulty: "medium"
+            },
+            {
+                id: 5,
+                question: "What was the name of the sea that Moses parted?",
+                options: ["Red Sea", "Dead Sea", "Sea of Galilee", "Mediterranean Sea"],
+                correctAnswer: 0,
+                verse: "Exodus 14:21-22",
+                explanation: "Moses parted the Red Sea, allowing the Israelites to escape from the pursuing Egyptian army.",
+                topic: "ot",
+                book: "exodus",
+                difficulty: "easy"
+            },
+            {
+                id: 6,
+                question: "Who wrote most of the New Testament epistles?",
+                options: ["Peter", "John", "Paul", "James"],
+                correctAnswer: 2,
+                verse: "",
+                explanation: "The Apostle Paul wrote 13 of the 21 epistles in the New Testament.",
+                topic: "nt",
+                book: "",
+                difficulty: "medium"
+            },
+            {
+                id: 7,
+                question: "What was Jesus' first miracle?",
+                options: ["Healing a blind man", "Walking on water", "Turning water into wine", "Feeding the 5000"],
+                correctAnswer: 2,
+                verse: "John 2:1-11",
+                explanation: "Jesus turned water into wine at the wedding in Cana, which was his first public miracle.",
+                topic: "nt",
+                book: "john",
+                difficulty: "medium"
+            },
+            {
+                id: 8,
+                question: "Who was the first king of Israel?",
+                options: ["David", "Solomon", "Saul", "Rehoboam"],
+                correctAnswer: 2,
+                verse: "1 Samuel 10:1",
+                explanation: "Saul was anointed as the first king of Israel by the prophet Samuel.",
+                topic: "ot",
+                book: "1 samuel",
+                difficulty: "medium"
+            },
+            {
+                id: 9,
+                question: "Which book comes right before Psalms in the Bible?",
+                options: ["Proverbs", "Job", "Ruth", "Esther"],
+                correctAnswer: 1,
+                verse: "",
+                explanation: "The book of Job comes before Psalms in the Old Testament.",
+                topic: "ot",
+                book: "",
+                difficulty: "hard"
+            },
+            {
+                id: 10,
+                question: "How many days was Jonah inside the great fish?",
+                options: ["3 days", "7 days", "40 days", "1 day"],
+                correctAnswer: 0,
+                verse: "Jonah 1:17",
+                explanation: "Jonah was in the belly of the great fish for three days and three nights.",
+                topic: "ot",
+                book: "jonah",
+                difficulty: "easy"
+            }
+        ];
+        
+        // AI feedback messages
+        const aiFeedback = {
+            positive: [
+                "Excellent work! Your understanding of Scripture is impressive.",
+                "Great job! Your knowledge of the Bible is clearly growing.",
+                "Well done! You're demonstrating deep biblical insight.",
+                "Fantastic! Your study of Scripture is paying off.",
+                "Outstanding! Your answers show careful thought and understanding."
+            ],
+            constructive: [
+                "Good effort! Consider reviewing the Gospels to strengthen your knowledge.",
+                "Nice try! You might benefit from studying the Book of Acts.",
+                "You're making progress! Focus on Paul's letters for improvement.",
+                "Good attempt! Try studying the Old Testament prophets.",
+                "You're getting there! The wisdom literature might be a good study area."
+            ],
+            hints: [
+                "Consider the context of this story in biblical history.",
+                "Think about the main themes of this book of the Bible.",
+                "Remember the key characters involved in this biblical account.",
+                "This event is recorded in one of the Gospels.",
+                "The answer relates to God's covenant with His people."
+            ]
+        };
+        
+        // DOM Elements
+        const settingsCard = document.querySelector('.settings-card');
+        const quizArea = document.getElementById('quiz-area');
+        const resultsScreen = document.getElementById('results-screen');
+        const startBtn = document.getElementById('start-quiz');
+        const nextBtn = document.getElementById('next-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionText = document.getElementById('question-text');
+        const verseRef = document.getElementById('verse-ref');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackArea = document.getElementById('feedback-area');
+        const feedbackText = document.getElementById('feedback-text');
+        const scoreDisplay = document.getElementById('score');
+        const streakDisplay = document.getElementById('streak');
+        const progressDisplay = document.getElementById('progress');
+        const currentQ = document.getElementById('current-q');
+        const finalScore = document.getElementById('final-score');
+        const correctCount = document.getElementById('correct-count');
+        const totalQuestions = document.getElementById('total-questions');
+        const aiFeedbackText = document.getElementById('ai-feedback-text');
+        const drawTimer = document.getElementById('draw-timer');
+        const currentWinner = document.getElementById('current-winner');
+        const timerBar = document.getElementById('timer-bar');
+        const timerText = document.getElementById('timer-text');
+        const submitNameBtn = document.getElementById('submit-name');
+        const skipNameBtn = document.getElementById('skip-name');
+        const firstNameInput = document.getElementById('first-name');
+        const lastNameInput = document.getElementById('last-name');
+        const aiFeedbackSection = document.getElementById('ai-feedback-section');
+        const achievementsSection = document.getElementById('achievements-section');
+        
+        // Quiz state
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let selectedOption = null;
+        let questions = [];
+        let answeredCorrectly = [];
+        let timerInterval;
+        let timeLeft = 10;
+        
+        // Initialize the quiz
+        function initQuiz() {
+            // Get settings
+            const questionCount = parseInt(document.getElementById('question-count').value);
+            const topic = document.getElementById('topic').value;
+            const book = document.getElementById('book').value;
+            const difficulty = document.getElementById('difficulty').value;
+            
+            // Filter questions based on settings
+            questions = [...bibleQuestions];
+            if (topic !== 'all') {
+                questions = questions.filter(q => q.topic === topic);
+            }
+            if (book !== 'any') {
+                questions = questions.filter(q => q.book === book);
+            }
+            questions = questions.filter(q => q.difficulty === difficulty);
+            
+            // Limit number of questions
+            questions = questions.slice(0, questionCount);
+            
+            // Reset state
+            currentQuestionIndex = 0;
+            score = 0;
+            streak = 0;
+            answeredCorrectly = [];
+            
+            // Update displays
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = streak;
+            progressDisplay.textContent = `1/${questions.length}`;
+            
+            // Show quiz area
+            settingsCard.style.display = 'none';
+            quizArea.style.display = 'block';
+            resultsScreen.style.display = 'none';
+            
+            // Load first question
+            loadQuestion(currentQuestionIndex);
+        }
+        
+        // Load a question
+        function loadQuestion(index) {
+            if (index >= questions.length) {
+                showResults();
+                return;
+            }
+            
+            const question = questions[index];
+            questionText.textContent = question.question;
+            verseRef.textContent = question.verse ? `Reference: ${question.verse}` : '';
+            currentQ.textContent = index + 1;
+            progressDisplay.textContent = `${index + 1}/${questions.length}`;
+            
+            // Hide verse reference initially
+            verseRef.style.display = 'none';
+            
+            // Reset timer
+            timeLeft = 10;
+            timerBar.style.width = '100%';
+            timerText.textContent = `${timeLeft} seconds remaining`;
+            
+            // Clear previous timer
+            if (timerInterval) clearInterval(timerInterval);
+            
+            // Start new timer
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = `${timeLeft} second${timeLeft !== 1 ? 's' : ''} remaining`;
+                timerBar.style.width = `${(timeLeft / 10) * 100}%`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerText.textContent = "Time's up!";
+                    timerBar.style.width = '0%';
+                    
+                    // Automatically mark as incorrect
+                    const options = document.querySelectorAll('.option');
+                    if (options.length > 0 && selectedOption === null) {
+                        const correctIndex = question.correctAnswer;
+                        const correctOption = document.querySelector(`.option[data-option="${String.fromCharCode(65 + correctIndex)}"]`);
+                        
+                        // Highlight correct answer
+                        correctOption.classList.add('correct');
+                        
+                        // Disable all options
+                        options.forEach(opt => {
+                            opt.style.pointerEvents = 'none';
+                        });
+                        
+                        // Show feedback
+                        feedbackText.textContent = "Time ran out! " + question.explanation;
+                        feedbackArea.style.display = 'block';
+                        
+                        // Show verse reference
+                        verseRef.style.display = 'block';
+                        
+                        // Update streak
+                        streak = 0;
+                        streakDisplay.textContent = streak;
+                        
+                        // Enable next button
+                        nextBtn.disabled = false;
+                    }
+                }
+            }, 1000);
+            
+            // Clear options
+            optionsContainer.innerHTML = '';
+            
+            // Add new options
+            question.options.forEach((option, i) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                optionElement.dataset.option = String.fromCharCode(65 + i);
+                optionElement.innerHTML = `
+                    <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                optionElement.addEventListener('click', () => selectOption(optionElement, i));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Reset UI
+            feedbackArea.style.display = 'none';
+            selectedOption = null;
+            nextBtn.disabled = true;
+        }
+        
+        // Select an option
+        function selectOption(optionElement, index) {
+            if (selectedOption !== null) return;
+            
+            // Stop timer
+            clearInterval(timerInterval);
+            
+            selectedOption = index;
+            const question = questions[currentQuestionIndex];
+            
+            // Mark selected option
+            optionElement.classList.add('selected');
+            
+            // Disable all options
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Check answer
+            const isCorrect = index === question.correctAnswer;
+            
+            if (isCorrect) {
+                optionElement.classList.add('correct');
+                score += 10;
+                streak++;
+                answeredCorrectly.push(true);
+            } else {
+                optionElement.classList.add('incorrect');
+                streak = 0;
+                answeredCorrectly.push(false);
+                
+                // Highlight correct answer
+                const correctOption = document.querySelector(`.option[data-option="${String.fromCharCode(65 + question.correctAnswer)}"]`);
+                correctOption.classList.add('correct');
+            }
+            
+            // Update score and streak
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = streak;
+            
+            // Show feedback
+            feedbackText.textContent = question.explanation;
+            feedbackArea.style.display = 'block';
+            
+            // Show verse reference
+            verseRef.style.display = 'block';
+            
+            // Enable next button
+            nextBtn.disabled = false;
+        }
+        
+        // Show hint
+        function showHint() {
+            const randomHint = aiFeedback.hints[Math.floor(Math.random() * aiFeedback.hints.length)];
+            
+            // Create and show hint
+            feedbackText.textContent = randomHint;
+            feedbackArea.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                feedbackArea.style.display = 'none';
+            }, 5000);
+        }
+        
+        // Next question
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
+        }
+        
+        // Show results
+        function showResults() {
+            quizArea.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            
+            const correct = answeredCorrectly.filter(c => c).length;
+            const total = answeredCorrectly.length;
+            const percentage = Math.round((correct / total) * 100);
+            
+            // Update results
+            finalScore.textContent = `${percentage}%`;
+            correctCount.textContent = correct;
+            totalQuestions.textContent = total;
+            
+            // Generate AI feedback
+            let feedback;
+            if (percentage >= 90) {
+                feedback = aiFeedback.positive[Math.floor(Math.random() * aiFeedback.positive.length)];
+            } else {
+                feedback = aiFeedback.constructive[Math.floor(Math.random() * aiFeedback.constructive.length)];
+            }
+            aiFeedbackText.textContent = feedback;
+            
+            // Hide AI feedback and achievements until name is submitted or skipped
+            aiFeedbackSection.style.display = 'none';
+            achievementsSection.style.display = 'none';
+        }
+        
+        // Submit name to leaderboard
+        function submitName() {
+            const firstName = firstNameInput.value.trim();
+            const lastName = lastNameInput.value.trim();
+            
+            // Create name display
+            let displayName = "Anonymous";
+            if (firstName || lastName) {
+                displayName = `${firstName} ${lastName}`.trim();
+            }
+            
+            // Show confirmation message
+            const nameForm = document.querySelector('.name-form');
+            nameForm.innerHTML = `
+                <h3>Thank You, ${displayName}!</h3>
+                <p>Your results have been submitted to the leaderboard</p>
+                <div class="btn" style="margin-top: 20px; background: #4CAF50;">
+                    <i class="fas fa-check"></i> Submission Successful
+                </div>
+            `;
+            
+            // Show achievements and feedback
+            aiFeedbackSection.style.display = 'block';
+            achievementsSection.style.display = 'flex';
+        }
+        
+        // Skip name submission
+        function skipName() {
+            const nameForm = document.querySelector('.name-form');
+            nameForm.innerHTML = `
+                <h3>Results Summary</h3>
+                <p>You can always add your name later from the leaderboard</p>
+            `;
+            
+            // Show achievements and feedback
+            aiFeedbackSection.style.display = 'block';
+            achievementsSection.style.display = 'flex';
+        }
+        
+        // Update hourly draw timer
+        function updateDrawTimer() {
+            const now = new Date();
+            const minutes = 59 - now.getMinutes();
+            const seconds = 59 - now.getSeconds();
+            drawTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update winner every hour
+            if (minutes === 59 && seconds === 59) {
+                const names = ['Sarah Johnson', 'Michael Chen', 'David Thompson', 'Rebecca Williams', 'James Wilson', 'Emily Parker', 'Daniel Kim'];
+                currentWinner.textContent = names[Math.floor(Math.random() * names.length)];
+            }
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', initQuiz);
+        nextBtn.addEventListener('click', nextQuestion);
+        hintBtn.addEventListener('click', showHint);
+        restartBtn.addEventListener('click', () => {
+            resultsScreen.style.display = 'none';
+            settingsCard.style.display = 'block';
+        });
+        submitNameBtn.addEventListener('click', submitName);
+        skipNameBtn.addEventListener('click', skipName);
+        
+        // Initialize
+        updateDrawTimer();
+        setInterval(updateDrawTimer, 1000);
+        
+        // Simulate leaderboard updates
+        setInterval(() => {
+            const leaderboardItems = document.querySelectorAll('.leaderboard-item');
+            leaderboardItems.forEach(item => {
+                const scoreElement = item.querySelector('.leaderboard-score');
+                const currentScore = parseInt(scoreElement.textContent);
+                const newScore = Math.min(99, currentScore + Math.floor(Math.random() * 3) - 1);
+                scoreElement.textContent = `${newScore}%`;
+            });
+        }, 60000);
+    </script>
+</body>
+</html>
+
